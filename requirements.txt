@@ -1,0 +1,9 @@
+crewai
+crewai-tools
+openai
+reportlab
+yagmail
+python-dotenv
+langchain-openai
+langchain-community
+langchain-groq
