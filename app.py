@@ -1,4 +1,5 @@
 import os
+os.environ["CHROMA_DB_IMPL"] = "duckdb+parquet"
 import streamlit as st
 from crewai import Crew, Process
 from ai_research_project.agents.researcher_writer import get_research_writer
@@ -7,6 +8,7 @@ from utils.pdf_generator import generate_pdf_report
 from utils.email_sender import send_email_with_attachment
 from config.settings import RECIPIENT_EMAIL
 from dotenv import load_dotenv
+
 
 # Load .env variables manually for Streamlit
 load_dotenv()
