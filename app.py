@@ -1,29 +1,21 @@
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import os
 import streamlit as st
-
-# Inject environment variables from Streamlit Cloud secrets
-os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
-os.environ["GROQ_API_BASE"] = st.secrets["GROQ_API_BASE"]
-os.environ["GROQ_MODEL"] = st.secrets["GROQ_MODEL"]
-os.environ["SENDER_EMAIL"] = st.secrets["SENDER_EMAIL"]
-os.environ["SENDER_PASSWORD"] = st.secrets["SENDER_PASSWORD"]
-os.environ["RECIPIENT_EMAIL"] = st.secrets["RECIPIENT_EMAIL"]
-
 from crewai import Crew, Process
 from ai_research_project.agents.researcher_writer import get_research_writer
 from ai_research_project.tasks.researcher_writer_task import get_researcher_writer_task
 from utils.pdf_generator import generate_pdf_report
 from utils.email_sender import send_email_with_attachment
-from config.settings import RECIPIENT_EMAIL
 
-# Get environment variables
-RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
-SENDER_EMAIL = os.getenv("SENDER_EMAIL")
-SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
+# Read secrets from Streamlit's secure storage (no need for dotenv in Streamlit Cloud)
+RECIPIENT_EMAIL = st.secrets.get("RECIPIENT_EMAIL", "")
+SENDER_EMAIL = st.secrets.get("SENDER_EMAIL", "")
+SENDER_PASSWORD = st.secrets.get("SENDER_PASSWORD", "")
 
+# Initialize Streamlit session state
 if 'pdf_path' not in st.session_state:
     st.session_state.pdf_path = None
 
@@ -69,8 +61,13 @@ if submitted:
             author_name=author,
             project_title=f"AI Research on {topic}"
         )
-    
-    st.session_state.pdf_path = pdf_path  # 👈 Store in session
+
+    # ✅ Ensure file path is valid
+    if not pdf_path or not os.path.isfile(pdf_path):
+        st.error("❌ Failed to generate PDF file. Please check path or permissions.")
+        st.stop()
+
+    st.session_state.pdf_path = pdf_path
     st.session_state.result = result
     st.success("✅ PDF Created!")
 
@@ -83,18 +80,16 @@ if submitted:
             mime="application/pdf"
         )
 
-
 # Email Report
 if st.button("📧 Send Report to Email"):
-     if st.session_state.pdf_path:
-        with st.spinner("Sending email..."):
+    if st.session_state.pdf_path:
+        with st.spinner("📤 Sending email..."):
             status = send_email_with_attachment(
                 receiver_email=email,
                 subject="AI Research Report",
                 body="Attached is your finalized AI-generated research report.",
                 attachment_path=st.session_state.pdf_path
             )
-        
 
         # Status display
         st.write(f"📬 Email send status: `{status}`")  # Show raw status
@@ -105,3 +100,5 @@ if st.button("📧 Send Report to Email"):
             st.error(f"❌ Email failed: {status}")
         else:
             st.warning("❓ Unexpected result while trying to send email.")
+
+    
