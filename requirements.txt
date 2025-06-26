@@ -4,5 +4,7 @@ streamlit
 reportlab
 yagmail
 python-dotenv
+duckdb>=0.9.2
+
 
 
