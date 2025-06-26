@@ -3,17 +3,21 @@ import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import os
 import streamlit as st
+
+# Inject environment variables from Streamlit Cloud secrets
+os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+os.environ["GROQ_API_BASE"] = st.secrets["GROQ_API_BASE"]
+os.environ["GROQ_MODEL"] = st.secrets["GROQ_MODEL"]
+os.environ["SENDER_EMAIL"] = st.secrets["SENDER_EMAIL"]
+os.environ["SENDER_PASSWORD"] = st.secrets["SENDER_PASSWORD"]
+os.environ["RECIPIENT_EMAIL"] = st.secrets["RECIPIENT_EMAIL"]
+
 from crewai import Crew, Process
 from ai_research_project.agents.researcher_writer import get_research_writer
 from ai_research_project.tasks.researcher_writer_task import get_researcher_writer_task
 from utils.pdf_generator import generate_pdf_report
 from utils.email_sender import send_email_with_attachment
 from config.settings import RECIPIENT_EMAIL
-from dotenv import load_dotenv
-
-
-# Load .env variables manually for Streamlit
-load_dotenv()
 
 # Get environment variables
 RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
