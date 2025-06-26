@@ -4,5 +4,6 @@ streamlit
 reportlab
 yagmail
 python-dotenv
+pysqlite3-binary
 
 
