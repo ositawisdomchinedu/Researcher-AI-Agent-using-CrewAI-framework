@@ -75,20 +75,26 @@ if submitted:
 if st.button("📧 Send Report to Email"):
     pdf_path = st.session_state.get("pdf_path")
 
-    if pdf_path:
-        with st.spinner("📤 Sending email..."):
-            status = send_email_with_attachment(
-                receiver_email=email,
-                subject="AI Research Report",
-                body="Attached is your finalized AI-generated research report.",
-                attachment_path=pdf_path
-            )
-        st.write(f"📬 Email send status: `{status}`")
+    st.write(f"📁 DEBUG: pdf_path is `{pdf_path}` and type is {type(pdf_path)}")
 
-        if status == "SUCCESS":
-            st.success(f"📧 Email sent to {email}")
-        else:
-            st.error(f"❌ Email failed: {status}")
+    if isinstance(pdf_path, str):
+        try:
+            with st.spinner("📤 Sending email..."):
+                status = send_email_with_attachment(
+                    receiver_email=email,
+                    subject="AI Research Report",
+                    body="Attached is your finalized AI-generated research report.",
+                    attachment_path=pdf_path
+                )
+            st.write(f"📬 Email send status: `{status}`")
+
+            if status == "SUCCESS":
+                st.success(f"📧 Email sent to {email}")
+            else:
+                st.error(f"❌ Email failed: {status}")
+        except Exception as e:
+            st.error(f"❌ Unexpected error: {e}")
     else:
-        st.error("❌ No valid PDF available to send.")
+        st.error("❌ Invalid PDF path. Please generate the report first.")
+
 
