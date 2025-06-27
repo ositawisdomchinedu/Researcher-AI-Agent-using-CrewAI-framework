@@ -56,7 +56,7 @@ if submitted:
             project_title=f"AI Research on {topic}"
         )
 
-    if pdf_path and isinstance(pdf_path, str) and os.path.exists(pdf_path):
+    if pdf_path:
         st.session_state.pdf_path = pdf_path
         st.session_state.result = result
         st.success("✅ PDF Created!")
@@ -75,7 +75,7 @@ if submitted:
 if st.button("📧 Send Report to Email"):
     pdf_path = st.session_state.get("pdf_path")
 
-    if pdf_path and isinstance(pdf_path, str) and os.path.exists(pdf_path):
+    if pdf_path:
         with st.spinner("📤 Sending email..."):
             status = send_email_with_attachment(
                 receiver_email=email,
