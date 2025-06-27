@@ -75,7 +75,7 @@ if submitted:
 if st.button("📧 Send Report to Email"):
     pdf_path = st.session_state.get("pdf_path")
 
-    st.write(f"📁 DEBUG: pdf_path is `{pdf_path}` and type is {type(pdf_path)}")
+    #st.write(f"📁 DEBUG: pdf_path is `{pdf_path}` and type is {type(pdf_path)}")
 
     if isinstance(pdf_path, str):
         try:
