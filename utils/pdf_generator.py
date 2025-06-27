@@ -1,5 +1,6 @@
 import re
 import os
+import tempfile
 from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -15,10 +16,11 @@ def markdown_to_plaintext(line):
     return line.strip()
 
 def generate_pdf_report(content, filename="AI_Research_Report.pdf", author_name="Osita Wisdom Chinedu", project_title="AI Research on Food Security in Africa"):
-    folder = "reports"
-    os.makedirs(folder, exist_ok=True)
+    # Create a temp file in system's temp directory
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    filepath = temp_file.name
+    temp_file.close()  # Close so ReportLab can write to it
 
-    filepath = os.path.join(folder, filename)
     doc = SimpleDocTemplate(filepath, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
 
     styles = getSampleStyleSheet()
@@ -39,9 +41,8 @@ def generate_pdf_report(content, filename="AI_Research_Report.pdf", author_name=
         else:
             flowables.append(Spacer(1, 10))
 
-     try:
+    try:
         doc.build(flowables)
-        print(f"✅ PDF report generated at: {filepath}")
         return filepath if os.path.exists(filepath) else None
     except Exception as e:
         print(f"❌ PDF generation failed: {e}")
