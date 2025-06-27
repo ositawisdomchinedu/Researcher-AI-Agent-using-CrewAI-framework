@@ -39,6 +39,10 @@ def generate_pdf_report(content, filename="AI_Research_Report.pdf", author_name=
         else:
             flowables.append(Spacer(1, 10))
 
-    doc.build(flowables)
-    print(f"✅ PDF report generated at: {filepath}")
-    return filepath
+     try:
+        doc.build(flowables)
+        print(f"✅ PDF report generated at: {filepath}")
+        return filepath if os.path.exists(filepath) else None
+    except Exception as e:
+        print(f"❌ PDF generation failed: {e}")
+        return None
